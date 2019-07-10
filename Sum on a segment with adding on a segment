@@ -1,0 +1,41 @@
+struct segtree
+{
+  ll T[maxn * 2 + 10];
+  ll lazy[maxn * 2 + 10];
+  void push(int v, int tl, int tr)
+  {
+      lazy[v << 1] += lazy[v];
+      lazy[v << 1 | 1] += lazy[v];
+      int tm = (tl + tr) / 2;
+      T[v << 1] += lazy[v] * (tm - tl + 1);
+      T[v << 1 | 1] += lazy[v] * (tr - tm);
+      lazy[v] = 0;
+  }
+
+  ll query(int v, int tl, int tr, int l, int r)
+  {
+    if (tl > r || tr < l) return 0;
+    if (tl != tr) push(v, tl, tr);
+    if (tl >= l && tr <= r) return T[v];
+    int tm = (tl + tr) >> 1;
+    return query(v << 1, tl, tm, l, r) +
+           query(v << 1 | 1, tm + 1, tr, l, r);
+  }
+
+  void update(int v, int tl, int tr, int l, int r, ll x)
+  {
+    if (tl > r || tr < l) return;
+    if (tl >= l && tr <= r)
+    {
+      lazy[v] += x;
+      T[v] += x * (tr - tl + 1);
+      return;
+    }
+    push(v, tl, tr);
+    int tm = (tl + tr) >> 1;
+    update(v << 1, tl, tm, l, r, x);
+    update(v << 1 | 1, tm + 1, tr, l, r, x);
+    T[v] = T[v << 1] + T[v << 1 | 1];
+    return;
+  }
+};
