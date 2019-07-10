@@ -2,14 +2,21 @@ struct segtree
 {
   ll T[maxn * 2 + 10];
   ll lazy[maxn * 2 + 10];
+  bool used[maxn * 2 + 10];
   void push(int v, int tl, int tr)
   {
-      lazy[v << 1] += lazy[v];
-      lazy[v << 1 | 1] += lazy[v];
-      int tm = (tl + tr) / 2;
-      T[v << 1] += lazy[v] * (tm - tl + 1);
-      T[v << 1 | 1] += lazy[v] * (tr - tm);
-      lazy[v] = 0;
+      if (used[v])
+      {
+          lazy[v << 1] += lazy[v];
+          lazy[v << 1 | 1] += lazy[v];
+          int tm = (tl + tr) >> 1;
+          T[v << 1] += lazy[v] * (tm - tl + 1);
+          T[v << 1 | 1] += lazy[v] * (tr - tm);
+          used[v << 1] = true;
+          used[v << 1 | 1] = true;
+          used[v] = false;
+          lazy[v] = 0;
+      }
   }
 
   ll query(int v, int tl, int tr, int l, int r)
@@ -29,6 +36,7 @@ struct segtree
     {
       lazy[v] += x;
       T[v] += x * (tr - tl + 1);
+      used[v] = true;
       return;
     }
     push(v, tl, tr);
