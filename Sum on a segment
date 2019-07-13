@@ -1,34 +1,22 @@
 struct segtree
 {
-	int T[maxn * 2 + 20]{};
-	int query(int v, int tl, int tr, int l, int r)
-	{
-		if (tl > r || tr < l) return 0;
-		if (tl >= l && tr <= r)
-		{
-			return T[v];
-		}
-		int mid = (tl + tr) / 2;
-		return query(v << 1, tl, mid, l, r) +
-			   query(v << 1 | 1, mid + 1, tr, l, r);
-	}
-	void update(int v, int tl, int tr, int p, int x)
-	{
-		if (tl == tr)
-		{
-			T[v] = x;
-			return;
-		}
-		int tm = (tl + tr) / 2;
-        if (p <= tm)
-        {
-            update(v << 1, tl, tm, p, x);
-        }
-        else
-        {
-            update(v << 1 | 1, tm + 1, tr, p, x);
-        }
-		T[v] = T[v << 1] + T[v << 1 | 1];
-		return;
-	}
+    ll t[maxn * 2 + 5];
+    ll sum(int v, int tl, int tr, int l, int r)
+    {
+        if (tl > r || tr < l) return 0;
+        if (tl >= l && tr <= r) return t[v];
+        int tm = (tl + tr) / 2;
+        return sum(v << 1, tl, tm, l, r) +
+               sum(v << 1 | 1, tm + 1, tr, l, r);
+    }
+
+    void update(int v, int tl, int tr, int p, int x)
+    {
+        if (tl == tr) {t[v] = x; return;}
+        int tm = (tl + tr) >> 1;
+        if (p <= tm) update(v << 1, tl, tm, p, x);
+            else	 update(v << 1 | 1, tm + 1, tr, p, x);
+        t[v] = t[v << 1] + t[v << 1 | 1];
+        return;
+    }
 };
