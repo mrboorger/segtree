@@ -1,10 +1,10 @@
 struct segtree
 {
-    ll t[maxn * 2 + 5];
+    ll T[maxn * 2 + 5];
     ll sum(int v, int tl, int tr, int l, int r)
     {
         if (tl > r || tr < l) return 0;
-        if (tl >= l && tr <= r) return t[v];
+        if (tl >= l && tr <= r) return T[v];
         int tm = (tl + tr) / 2;
         return sum(v << 1, tl, tm, l, r) +
                sum(v << 1 | 1, tm + 1, tr, l, r);
@@ -12,11 +12,11 @@ struct segtree
 
     void update(int v, int tl, int tr, int p, int x)
     {
-        if (tl == tr) {t[v] = x; return;}
+        if (tl == tr) {T[v] = x; return;}
         int tm = (tl + tr) >> 1;
         if (p <= tm) update(v << 1, tl, tm, p, x);
             else	 update(v << 1 | 1, tm + 1, tr, p, x);
-        t[v] = t[v << 1] + t[v << 1 | 1];
+        T[v] = T[v << 1] + T[v << 1 | 1];
         return;
     }
 };
