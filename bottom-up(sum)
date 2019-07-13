@@ -1,0 +1,33 @@
+struct segtree
+{
+    ll T[maxn * 2 + 5];
+    ll sum(int l, int r)
+    {
+        l += maxn;
+        r += maxn;
+        ll resl = 0;
+        ll resr = 0;
+        while(l < r)
+        {
+            if (l % 2 == 1) {resl += T[l]; ++l;}
+            if (r % 2 == 0) {resr += T[r]; --r;}
+            l >>= 1;
+            r >>= 1;
+        }
+        if (l == r) resl += T[l];
+        return resl + resr;
+    }
+
+    void update(int p, int x)
+    {
+        int v = p + maxn;
+        T[v] = x;
+        v >>= 1;
+        while(v > 0)
+        {
+            T[v] = T[v << 1] + T[v << 1 | 1];
+            v >>= 1;
+        }
+        return;
+    }
+};
