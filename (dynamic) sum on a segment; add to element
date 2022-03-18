@@ -1,0 +1,78 @@
+class SegTree {
+public:
+  explicit SegTree(int n) {
+    while (pw_ < n) {
+      pw_ *= 2;
+    }
+    tree_.resize(pw_ * 2);
+
+    for (int i = 0; i < pw_ * 2; ++i) {
+      tree_[pw_ + i] = kNeutral;
+    }
+  }
+
+  explicit SegTree(const std::vector<int64_t> &nums) {
+    while (pw_ < nums.size()) {
+      pw_ *= 2;
+    }
+    tree_.resize(pw_ * 2);
+
+    for (int i = 0; i < (int)nums.size(); ++i) {
+      tree_[pw_ + i] = nums[i];
+    }
+    for (int i = (int)nums.size(); i < pw_; ++i) {
+      tree_[pw_ + i] = kNeutral;
+    }
+
+    for (int i = pw_ - 1; i >= 1; --i) {
+      UpdateNode(i);
+    }
+  }
+
+  // Add
+  void UpdateQuery(int pos, int64_t add) {
+    UpdateQuery(1, 0, pw_ - 1, pos, add);
+  }
+
+  int64_t GetQuery(int l, int r) { return GetQuery(1, 0, pw_ - 1, l, r); }
+
+private:
+  static constexpr int64_t kNeutral = 0;
+
+  std::vector<int64_t> tree_;
+  int pw_ = 1;
+
+  static int64_t CalcOp(int64_t lhs, int64_t rhs) { return lhs + rhs; }
+
+  void UpdateNode(int v) { tree_[v] = CalcOp(tree_[v * 2], tree_[v * 2 + 1]); }
+
+  void UpdateQuery(int v, int tl, int tr, int pos, int64_t add) {
+    if (pos > tr || pos < tl) {
+      return;
+    }
+
+    if (tl == tr) {
+      tree_[v] += add;
+      return;
+    }
+
+    int tm = (tl + tr) / 2;
+    UpdateQuery(v * 2, tl, tm, pos, add);
+    UpdateQuery(v * 2 + 1, tm + 1, tr, pos, add);
+
+    UpdateNode(v);
+  }
+
+  int64_t GetQuery(int v, int tl, int tr, int l, int r) {
+    if (tr < l || tl > r) {
+      return kNeutral;
+    }
+    if (tl >= l && tr <= r) {
+      return tree_[v];
+    }
+
+    int tm = (tl + tr) / 2;
+    return CalcOp(GetQuery(v * 2, tl, tm, l, r),
+           GetQuery(v * 2 + 1, tm + 1, tr, l, r));
+  }
+};
